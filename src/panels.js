@@ -46,7 +46,6 @@ class Panel
 
 
         this._resizeLeft = document.createElement("div");
-        // this._resizeLeft.style.backgroundColor = 'green';
         this._resizeLeft.style.position = 'absolute';
         this._resizeLeft.style.left = '-3px';
         this._resizeLeft.style.width = '6px';
@@ -55,7 +54,6 @@ class Panel
         this._resizeLeft.style.cursor = 'e-resize';
 
         this._resizeRight = document.createElement("div");
-        // this._resizeRight.style.backgroundColor = 'blue';
         this._resizeRight.style.position = 'absolute';
         this._resizeRight.style.right = '-3px';
         this._resizeRight.style.width = '6px';
@@ -64,7 +62,6 @@ class Panel
         this._resizeRight.style.cursor = 'e-resize';
 
         this._resizeBottom = document.createElement("div");
-        // this._resizeBottom.style.backgroundColor = 'purple';
         this._resizeBottom.style.position = 'absolute';
         this._resizeBottom.style.bottom = '-3px';
         this._resizeBottom.style.width = '100%';
@@ -96,8 +93,6 @@ class Panel
             {
                 this._targetPosition.x = evt.clientX - this._mouseDownDelta.x;
                 this._targetPosition.y = evt.clientY - this._mouseDownDelta.y;
-                // this.position.x = this._targetPosition.x;
-                // this.position.y = this._targetPosition.y;
                 this._needPanelUpdate = true;
             }
             if(this._resizingInfos.resizing)
@@ -214,7 +209,6 @@ class Panel
     {
         if(this._needPanelUpdate)
         {
-            // const speed = this._speed;
             if(this._maximized)
             {
                 let width = parseFloat(getComputedStyle(this.parent, null).width.replace("px", ""));
@@ -243,7 +237,6 @@ class Panel
                 if((Math.abs(rootWidth-width+2)<=0.5) && (Math.abs(rootHeight-height+2.5)<=0.5) && (Math.abs(this.position.x)<=0.5)  && (Math.abs(this.position.y)<=0.5))
                 {
                     this._needPanelUpdate = false;
-                    // this._needContentUpdate = false;
                 }
             }
             else

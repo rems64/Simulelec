@@ -50,14 +50,10 @@ class Graph extends Widget
 
     update()
     {
-        // console.log("Content updated");
         this.width = getWidth(this._parent);
         this.height = getHeight(this._root)-3*getHeight(this._title);
         this._cvs.width = this.width;
         this._cvs.height = this.height;
-        // this._ctx.clearRect(0, 0, this.width, this.height);
-        // this._ctx.fillStyle = 'black';
-        // this._ctx.fillRect(20, 20, 40, 50);
         this._resolution = 10*this.width;
         this.drawBackground();
         for(let i in this._funcs)
@@ -133,44 +129,3 @@ class Graph extends Widget
         this._ctx.stroke();
     }
 }
-
-
-
-/*
-function frame()
-{
-    panel1.update();
-    panel2.update();
-    ctx1.clearRect(0, 0, width1, height1);
-    ctx2.clearRect(0, 0, width2, height2);
-    ctx1.fillStyle = 'white';
-    ctx1.fillRect(width1*0.1, height1*0.1, width1*0.8, height1*0.8);
-    ctx2.fillStyle = 'white';
-    ctx2.fillRect(width2*0.1, height2*0.1, width2*0.8, height2*0.8);
-    plotFunction1(width1*0.1, height1*0.1, width1*0.9, height1*0.9, -4*Math.PI, 4*Math.PI, -4*Math.PI, 4*Math.PI, width1/2, xsquared);
-    delta+=0.1;
-    // plotFunction2(width2*0.1, height2*0.1, width2*0.9, height2*0.9, -4*Math.PI, 4*Math.PI, -4*Math.PI, 4*Math.PI, 100, tan);
-    window.requestAnimationFrame(frame);
-}
-
-function plotFunction1(xmin, ymin, xmax, ymax, xbegin, xend, ybegin, yend, resolution, func)
-{
-    let h=0;
-    let x=xbegin;
-    let y = 0;
-    let g= 0;
-    const ampl = yend-ybegin;
-    ctx1.moveTo(xmin, ((func(xbegin)-ybegin)/ampl)*(ymax-ymin)+ymin);
-    ctx1.beginPath();
-    for(let i=0; i<=resolution; i++)
-    {
-        h=i/resolution;
-        x = h*(xend-xbegin)+xbegin;
-        y = func(x);
-        g = (y-ybegin)/(ampl);
-        ctx1.lineTo(h*(xmax-xmin)+xmin, g*(ymin-ymax)+ymax);
-    }
-    ctx1.stroke();
-}
-
-*/

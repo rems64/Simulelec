@@ -152,13 +152,13 @@ function operatorAssociativity(operator)
         case '*':
             return 0; // Left associative
         case '/':
-            return 0;
+            return 0; // Left associative
         case '+':
-            return 0;
+            return 0; // Left associative
         case '-':
-            return 0;
+            return 0; // Left associative
         default:
-            return 0;
+            return 0; // Left associative
     }
 }
 

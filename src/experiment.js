@@ -3,7 +3,6 @@ var formula = [];
 document.getElementById("btn1").addEventListener("click", () => {
     let a = document.getElementById("formula").value;
     let both = tokenify(a);
-    // let variables = both.variables;
     formula = stackify(both.tokens);
     graph1.update();
     panel1.update();
