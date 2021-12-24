@@ -58,6 +58,7 @@ class Graph extends Widget
         // this._ctx.clearRect(0, 0, this.width, this.height);
         // this._ctx.fillStyle = 'black';
         // this._ctx.fillRect(20, 20, 40, 50);
+        this._resolution = 10*this.width;
         this.drawBackground();
         for(let i in this._funcs)
         {

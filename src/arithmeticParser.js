@@ -23,13 +23,13 @@ function parseText(source, startIndex)
     let char;
     let op = false;
     let func = false;
-    let text = source[startIndex].match('[a-zA-Z]');
+    let text = !!source[startIndex].match('[a-zA-Z]');
     for(let i=startIndex; i<source.length; i++)
     {
         char = source[i];
         if(char==' ')
         {
-            console.log("Unexpected space in function name");
+            continue;
         }
         if((!char.match('[a-zA-Z]') && text) || (!isNaN(char) || isOperator(decodedText)))
         {
@@ -100,10 +100,10 @@ function tokenify(source)
             }
             else
             {
-                tokens.push({type: 5, value: char});
+                tokens.push({type: 5, value: result.text});
                 if(!variables.includes(char))
                 {
-                    variables.push(char);
+                    variables.push(result.text);
                 }
                 i+=result.offset;
             }
