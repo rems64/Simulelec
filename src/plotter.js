@@ -21,7 +21,7 @@ class Graph extends Widget
 
         this.width = 0
         this.height = 0;
-        this._func = func;
+        this._funcs = [{func: func, color: 'blue'}];
         this._xbegin = xbegin;
         this._xend = xend;
         this._ybegin = ybegin;
@@ -108,30 +108,27 @@ class Graph extends Widget
         }
     }
 
-    plotFunction()
+    plotFunction(index)
     {
         let h=0;
         let x=this._xbegin;
         let y = 0;
         let g= 0;
         const ampl = this._yend-this._ybegin;
-        this._ctx.moveTo(0, ((this._func(this._xbegin)-this._ybegin)/ampl)*(this.height));
+        this._ctx.strokeStyle = this._funcs[index].color;
+        this._ctx.moveTo(0, ((this._funcs[index].func(this._xbegin)-this._ybegin)/ampl)*(this.height));
         this._ctx.beginPath();
         for(let i=0; i<=this._resolution; i++)
         {
             h=i/this._resolution;
             x = h*(this._xend-this._xbegin)+this._xbegin;
-            y = this._func(x);
+            y = this._funcs[index].func(x);
             g = Math.max(Math.min((y-this._ybegin)/(ampl), 1), 0);
             this._ctx.lineTo(h*(this.width), (1-g)*(this.height));
-            // console.log(h*(this.width));
         }
         this._ctx.stroke();
     }
 }
-
-
-
 
 
 
