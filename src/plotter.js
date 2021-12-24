@@ -59,7 +59,10 @@ class Graph extends Widget
         // this._ctx.fillStyle = 'black';
         // this._ctx.fillRect(20, 20, 40, 50);
         this.drawBackground();
-        this.plotFunction();
+        for(let i in this._funcs)
+        {
+            this.plotFunction(i);
+        }
     }
 
     setBounds(xbegin, xend, ybegin, yend)

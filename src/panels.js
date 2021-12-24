@@ -2,9 +2,12 @@ class Panel
 {
     constructor(position, size, options={title: "Title", docked: false, parent: document.getElementsByTagName("body")[0], roundess: 10, maximized: false}, content=null, continuousUpdate=true)
     {
-        this.position = {x: 0, y: 0};
-        this.size = {width: 0, height: 0};
+        this.position = {x: position.x, y: position.y};
+        this.size = {width: size.width, height: size.height};
         this.docked = options.docked;
+
+        this._speed = 0.4;
+        this._normalSpeed = 0.4;
 
         this.parent = options.parent;
         this.content = content;
@@ -79,6 +82,7 @@ class Panel
         this._resizingInfos = {resizing: false, type: 'left', x: 0, y: 0, width: 0, height: 0}
 
         this._titleBar.addEventListener("mousedown", (evt) => {
+            this._speed = 1;
             this._mouseDownDelta = {x: evt.clientX - this.position.x, y: evt.clientY - this.position.y};
             this._dragging = true;
         })
@@ -92,6 +96,8 @@ class Panel
             {
                 this._targetPosition.x = evt.clientX - this._mouseDownDelta.x;
                 this._targetPosition.y = evt.clientY - this._mouseDownDelta.y;
+                // this.position.x = this._targetPosition.x;
+                // this.position.y = this._targetPosition.y;
                 this._needPanelUpdate = true;
             }
             if(this._resizingInfos.resizing)
@@ -121,6 +127,7 @@ class Panel
         })
 
         document.addEventListener("mouseup", (evt) => {
+            this._speed = this._normalSpeed;
             if(this._dragging)
             {
                 this._dragging = false;
@@ -132,11 +139,13 @@ class Panel
         })
 
         this._resizeRight.addEventListener("mousedown", (evt) => {
+            this._speed = 1;
             this._resizingInfos.resizing = true;
             this._resizingInfos.type = 'right';
         })
         
         this._resizeLeft.addEventListener("mousedown", (evt) => {
+            this._speed = 1;
             this._resizingInfos.resizing = true;
             this._resizingInfos.type = 'left';
             this._resizingInfos.x = this.position.x;
@@ -145,6 +154,7 @@ class Panel
         })
         
         this._resizeBottom.addEventListener("mousedown", (evt) => {
+            this._speed = 1;
             this._resizingInfos.resizing = true;
             this._resizingInfos.type = 'bottom';
         })
@@ -204,7 +214,7 @@ class Panel
     {
         if(this._needPanelUpdate)
         {
-            const speed = 1;
+            // const speed = this._speed;
             if(this._maximized)
             {
                 let width = parseFloat(getComputedStyle(this.parent, null).width.replace("px", ""));
@@ -213,17 +223,17 @@ class Panel
                 let rootHeight = parseFloat(getComputedStyle(this._root, null).height.replace("px", ""));
                 let rootTop = parseFloat(getComputedStyle(this._root, null).top.replace("px", ""));
                 let rootLeft = parseFloat(getComputedStyle(this._root, null).left.replace("px", ""));
-                this._root.style.width = lerp(rootWidth, width-2, speed)+'px';
-                this._root.style.height = lerp(rootHeight, height-2.5, speed)+'px';
-                this._root.style.top = lerp(rootTop, 0.0, speed)+'px';
-                this._root.style.left = lerp(rootLeft, 0.0, speed)+'px';
+                this._root.style.width = lerp(rootWidth, width-2, this._speed)+'px';
+                this._root.style.height = lerp(rootHeight, height-2.5, this._speed)+'px';
+                this._root.style.top = lerp(rootTop, 0.0, this._speed)+'px';
+                this._root.style.left = lerp(rootLeft, 0.0, this._speed)+'px';
                 this.position.x = 0;
                 this.position.y = 0;
-                this.size.width = width;
-                this.size.height = height;
+                this.size.width = lerp(this.size.width, width, this._speed);
+                this.size.height = lerp(this.size.height, height, this._speed);
                 this._roundess = 0;
-                this._titleBar.style.height = this._titleBarHeight + 'px';
-                this._content.style.height = (height - this._titleBarHeight - 2*2) + 'px';
+                this._titleBar.style.height = lerp(parseFloat(this._titleBar.style.width.replace("px", "")), this._titleBarHeight, this._speed) + 'px';
+                this._content.style.height = lerp(parseFloat(this._content.style.height.replace("px", "")), (height - this._titleBarHeight - 2*2), this._speed) + 'px';
                 
                 this._content.style.borderRadius = '0 0 0 0';
                 this._titleBar.style.borderRadius = '0 0 0 0';
@@ -247,11 +257,11 @@ class Panel
                 }
                 else
                 {
-                    this.position.x = lerp(this.position.x, this._targetPosition.x, speed);
-                    this.position.y = lerp(this.position.y, this._targetPosition.y, speed);
-                    this.size.width = lerp(this.size.width, this._targetSize.width, speed);
-                    this.size.height = lerp(this.size.height, this._targetSize.height, speed);
-                    this._roundess = lerp(this._roundess, this._targetRoundness, speed);
+                    this.position.x = lerp(this.position.x, this._targetPosition.x, this._speed);
+                    this.position.y = lerp(this.position.y, this._targetPosition.y, this._speed);
+                    this.size.width = lerp(this.size.width, this._targetSize.width, this._speed);
+                    this.size.height = lerp(this.size.height, this._targetSize.height, this._speed);
+                    this._roundess = lerp(this._roundess, this._targetRoundness, this._speed);
 
                     this._root.style.left = this.position.x + 'px';
                     this._root.style.top = this.position.y + 'px';
