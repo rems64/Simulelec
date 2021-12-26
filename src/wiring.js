@@ -5,6 +5,9 @@ function lerpVec(a, b, t) {
     };
 }
 
+const wiresMargin = 30;
+const wiresThickness = 4;
+
 class Drawable
 {
     constructor(position)
@@ -34,7 +37,7 @@ class Drawable
     }
 }
 
-class Wire extends Drawable
+class WireBezier extends Drawable
 {
     constructor(position, end, color='red')
     {
@@ -103,6 +106,149 @@ class Wire extends Drawable
         this._endHandle.x = Math.min(-10, -Math.abs(this._endPoint.x-this.position.x)*0.8);
         this._endHandle.y = 0;
         this._endHandle.y = 0;
+    }
+}
+
+class Wire extends Drawable
+{
+    constructor(position, end, color='red')
+    {
+        super(position);
+        this._endPoint = {x: end.x, y: end.y};
+        this._color = color;
+        this._inConnected = false;
+        this._outConnected = false;
+        this._inPin = null;
+        this._outPin = null;
+        this._reroutes = [];
+        this._selected = true;
+    }
+
+    draw()
+    {
+        if(this._visibility == "hidden")
+            return;
+        //Set wire thickness
+        ctx.save();
+        if(this._selected)
+        {
+            ctx.lineWidth = wiresThickness*2;
+            ctx.beginPath();
+            ctx.moveTo(this.position.x, this.position.y);
+            for(let i in this._reroutes)
+            {
+                ctx.lineTo(this._reroutes[i].x, this._reroutes[i].y);
+            }
+            ctx.lineTo(this._endPoint.x, this._endPoint.y);
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = 'rgb(255, 127, 0)';
+            ctx.stroke();
+        }
+        ctx.lineWidth = wiresThickness;
+        ctx.beginPath();
+        ctx.moveTo(this.position.x, this.position.y);
+        for(let i in this._reroutes)
+        {
+            ctx.lineTo(this._reroutes[i].x, this._reroutes[i].y);
+        }
+        ctx.lineTo(this._endPoint.x, this._endPoint.y);
+        ctx.strokeStyle = this._color;
+        ctx.setLineDash([]);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    update()
+    {
+        if(this._inConnected)
+        {
+            // console.log(this._inPin);
+            this.position.x = this._inPin.position.x;
+            this.position.y = this._inPin.position.y;
+            this._endPoint.x = this._outPin.position.x; 
+            this._endPoint.y = this._outPin.position.y;
+            // console.log(this._inPin);
+            // console.log(this._outPin);
+            this._reroutes = [];
+            if(this._inPin._type=="input" && this._outPin._type=="output")
+            {
+                if(this._inPin.position.x > this._outPin.position.x)
+                {
+                    const mid = (this._endPoint.x-this.position.x)/2 + this.position.x;
+                    this._reroutes[0] = {x: mid, y: this.position.y};
+                    this._reroutes[1] = {x: mid, y: this._endPoint.y};
+                }
+                else
+                {
+                    const mid = (this._endPoint.y-this.position.y)/2 + this.position.y;
+                    this._reroutes[0] = {x: this.position.x - wiresMargin, y: this.position.y};
+                    this._reroutes[1] = {x: this.position.x - wiresMargin, y: mid};
+                    this._reroutes[2] = {x: this._endPoint.x + wiresMargin, y: mid};
+                    this._reroutes[3] = {x: this._endPoint.x + wiresMargin, y: this._endPoint.y};
+                }
+            }
+            else if(this._inPin._type=="output" && this._outPin._type=="input")
+            {
+                if(this._inPin.position.x < this._outPin.position.x)
+                {
+                    const mid = (this._endPoint.x-this.position.x)/2 + this.position.x;
+                    this._reroutes[0] = {x: mid, y: this.position.y};
+                    this._reroutes[1] = {x: mid, y: this._endPoint.y};
+                }
+                else
+                {
+                    const mid = (this._endPoint.y-this.position.y)/2 + this.position.y;
+                    this._reroutes[0] = {x: this.position.x + wiresMargin, y: this.position.y};
+                    this._reroutes[1] = {x: this.position.x + wiresMargin, y: mid};
+                    this._reroutes[2] = {x: this._endPoint.x - wiresMargin, y: mid};
+                    this._reroutes[3] = {x: this._endPoint.x - wiresMargin, y: this._endPoint.y};
+                }
+            }
+            else if(this._inPin._type=="input" && this._outPin._type=="input")
+            {
+                // console.log("input input");
+                const mid = Math.min(this.position.x, this._endPoint.x) - wiresMargin;
+                this._reroutes[0] = {x: mid, y: this.position.y};
+                this._reroutes[1] = {x: mid, y: this._endPoint.y};
+            }
+            else if(this._inPin._type=="output" && this._outPin._type=="output")
+            {
+                // console.log("output output");
+                const mid = Math.max(this._endPoint.x, this.position.x) + wiresMargin;
+                this._reroutes[0] = {x: mid, y: this.position.y};
+                this._reroutes[1] = {x: mid, y: this._endPoint.y};
+            }
+            else
+            {
+                console.log("ERROR on pin types : " + this._inPin._type + " | " + this._outPin._type);
+            }
+        }
+        else
+        {
+            this._reroutes = [];
+        }
+    }
+
+    dragZone(position)
+    {
+        return {type: "none"};
+    }
+
+    setPosition(position)
+    {
+        this.position.x = position.x;
+        this.position.y = position.y;
+    }
+
+    getEnd()
+    {
+        return this._endPoint;
+    }
+
+    setEnd(position)
+    {
+        this._endPoint.x = position.x;
+        this._endPoint.y = position.y;
     }
 }
 
@@ -282,14 +428,16 @@ class Circuit
         this._mouseDown = false;
 
         this._components = [];
+        this._wires = [];
         this._draggedComponents = [];
         this._selectedComponents = [];
         this._tempWire = new Wire({x: 0, y: 0}, {x: 0, y: 0}, "red");
+        this._tempWireOrigin = null;
         this._tempWireHook = {x: 0, y: 0};
         this._tempWire.hide();
+        this._tmpDraggingPinTarget = null;
         this._draggingType = null;
         this._draggingRect = {x: 0, y: 0, w: 0, h: 0};
-        this._tmpDraggingPinTarget = null;
         this._snappingWidth = 50;
         this._backgroundRedraw = true;
         this._backgroundCanvas = document.createElement("canvas");
@@ -327,6 +475,7 @@ class Circuit
                 {
                     this._tempWireHook = drag.pin.position;
                 }
+                this._tempWireOrigin = drag.pin;
                 this._tempWire.setPosition(drag.pin.position);
                 this._tempWire.setEnd(drag.pin.position);
             }
@@ -348,7 +497,11 @@ class Circuit
         if(this._tempWire.getEnd().x != this._tempWire.getPosition().x || this._tempWire.getEnd().y != this._tempWire.getPosition().y)
         {
             let wire = new Wire(this._tempWire.getPosition(), this._tempWire.getEnd(), "red");
-            this._components.push(wire);
+            wire._inConnected = true;
+            wire._inPin = this._tempWireOrigin;
+            wire._outConnected = true;
+            wire._outPin = this._tmpDraggingPinTarget;
+            this._wires.push(wire);
         }
         // Check for each component if it's selected or not
         for(let i=0; i<this._components.length; i++)
@@ -387,7 +540,7 @@ class Circuit
                         if(pin.type=='pin')
                         {
                             this._tempWire.setPosition(pin.pin.position);
-                            this._tmpDraggingPinTarget = pin;
+                            this._tmpDraggingPinTarget = pin.pin;
                             break;
                         }
                     }
@@ -403,7 +556,7 @@ class Circuit
                         if(pin.type=='pin')
                         {
                             this._tempWire.setEnd(pin.pin.position);
-                            this._tmpDraggingPinTarget = pin;
+                            this._tmpDraggingPinTarget = pin.pin;
                             break;
                         }
                     }
@@ -418,14 +571,22 @@ class Circuit
                     let byb = Math.max(this._draggingRect.y, this._draggingRect.y+this._draggingRect.h);
                     for(let i in this._components)
                     {
-                        if(this._components[i].position.x >= bxa && this._components[i].position.x+this._components[i]._size.x <= bxb && this._components[i].position.y >= bya && this._components[i].position.y+this._components[i]._size.y <= byb)
-                        {
-                            this._components[i]._selected = true;
-                            this._selectedComponents.push(this._components[i]);
+                    if(this._components[i].position.x >= bxa && this._components[i].position.x+this._components[i]._size.x <= bxb && this._components[i].position.y >= bya && this._components[i].position.y+this._components[i]._size.y <= byb)
+                    {
+                        this._components[i]._selected = true;
+                            if(!this._selectedComponents.includes(this._components[i]))
+                            {
+                                this._selectedComponents.push(this._components[i]);
+                            }
                         }
                         else
                         {
                             this._components[i]._selected = false;
+                            // this._selectedComponents.delete(this._components[i])
+                            const index = this._selectedComponents.indexOf(this._components[i]);
+                            if (index > -1) {
+                                this._selectedComponents.splice(index, 1);
+                            }
                         }
                     }
                     break;
@@ -450,6 +611,11 @@ class Circuit
         {
             this._components[i].update();
         }
+        for(let i in this._wires)
+        {
+            this._wires[i].update();
+        }
+        this._tempWire.update();
     }
 
     draw()
@@ -476,6 +642,10 @@ class Circuit
         for(let i in this._components)
         {
             this._components[i].draw();
+        }
+        for(let i in this._wires)
+        {
+            this._wires[i].draw();
         }
         this._tempWire.draw();
 

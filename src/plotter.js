@@ -50,11 +50,15 @@ class Graph extends Widget
 
     update()
     {
+        console.log("Updating plot");
         this.width = getWidth(this._parent);
         this.height = getHeight(this._root)-3*getHeight(this._title);
-        this._cvs.width = this.width;
-        this._cvs.height = this.height;
-        this._resolution = 10*this.width;
+        if(this._cvs.width != this.width || this._cvs.height != this.height)
+        {
+            this._cvs.width = this.width;
+            this._cvs.height = this.height;
+            this._resolution = 10*this.width;
+        }
         this.drawBackground();
         for(let i in this._funcs)
         {

@@ -19,7 +19,7 @@ var base = {x: 0, y: 0};
 var mouseLoc = {x: 0, y: 0};
 
 var graph1 = new Graph("sin(x)", document.getElementsByTagName("body")[0], func);
-var panel1 = new Panel({x: 100, y: 100}, {width: 300, height: 400}, {title: "Graph1", docked: false, parent: document.getElementById("playground"), roundness: 10, maximized: false}, graph1);
+var panel1 = new Panel({x: 100, y: 100}, {width: 300, height: 400}, {title: "Graph1", docked: false, parent: document.getElementById("playground"), roundness: 10, maximized: false}, graph1, continuousUpdate= false);
 
 function func(x)
 {
@@ -28,10 +28,12 @@ function func(x)
 
 // var path1 = new Wire({x: 200, y: 200}, {x: 600, y: 600}, 'red');
 var circuit = new Circuit(cvs);
-circuit.addComponent(new Capacitor({x: 300, y: 400}));
-circuit.addComponent(new Coil({x: 500, y: 400}));
+circuit.addComponent(new IdealVoltageSupply({x: 400, y: 400}));
+circuit.addComponent(new IdealCurrentSupply({x: 600, y: 400}));
 circuit.addComponent(new Lamp({x: 800, y: 400}));
-circuit.addComponent(new Resistor({x: 300, y: 600}));
+circuit.addComponent(new Resistor({x: 400, y: 600}));
+circuit.addComponent(new Capacitor({x: 600, y: 600}));
+circuit.addComponent(new Coil({x: 800, y: 600}));
 
 cvs.addEventListener("mousedown", (evt) => {
     drawing = true;

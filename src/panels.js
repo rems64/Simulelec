@@ -271,10 +271,11 @@ class Panel
             }
         }
 
-        if(this._needContentUpdate || this._continuousUpdate)
+        if(this._needContentUpdate)
         {
             if(!!this.content)
             {
+                // console.log("Content update");
                 if(!this._maximized)
                 {
                     let deltaSize = {width: this._targetSize.width-this.size.width, height: this._targetSize.height - this.size.height};
@@ -293,6 +294,13 @@ class Panel
             else
             {
                 this._needContentUpdate = false;
+            }
+        }
+        if(!this.continuousUpdate && this._continuousUpdate)
+        {
+            if(!!this.content)
+            {
+                this.content.update();
             }
         }
     }

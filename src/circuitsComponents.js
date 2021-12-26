@@ -133,7 +133,8 @@ class Resistor extends Dipole
         this.color = 'red';
         // Reduce the size to match the capacitor
         this._size.x = 100;
-        this._size.y = 20;
+        this._size.y = 100;
+        this._thickness = 20;
         this._lineThickness = 2;
         this._supWiresLen = 20;
         this._resistance = 0.00003456;
@@ -176,7 +177,7 @@ class Resistor extends Dipole
         ctx.moveTo(this.position.x + this._size.x-this._supWiresLen, this.position.y+this._size.y/2);
         ctx.lineTo(this.position.x + this._size.x, this.position.y+this._size.y/2);
         ctx.stroke();
-        ctx.rect(this.position.x + this._supWiresLen, this.position.y, this._size.x - 2 * this._supWiresLen, this._size.y);
+        ctx.rect(this.position.x + this._supWiresLen, this.position.y+this._size.y/2-this._thickness/2, this._size.x - 2 * this._supWiresLen, this._thickness);
         ctx.stroke();
         ctx.fillStyle = 'white';
         ctx.fill();
@@ -185,5 +186,91 @@ class Resistor extends Dipole
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(this.getResistance(), this.position.x+this._size.x/2, this.position.y+this._size.y/2);
+    }
+}
+
+class Generator extends Dipole
+{
+    constructor(pos)
+    {
+        super(pos);
+        this.color = 'blue';
+        this._supWiresLen = 20;
+        this._size.x = this._size.y = 100;
+    }
+    
+    draw()
+    {
+        super.draw();
+        //Draw the generator
+        ctx.strokeStyle = 'black';
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.moveTo(this.position.x, this.position.y+this._size.y/2);
+        ctx.lineTo(this.position.x + this._supWiresLen, this.position.y+this._size.y/2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(this.position.x + this._size.x-this._supWiresLen, this.position.y+this._size.y/2);
+        ctx.lineTo(this.position.x + this._size.x, this.position.y+this._size.y/2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(this.position.x + this._size.x/2, this.position.y+this._size.y/2, this._size.x/2-this._supWiresLen, 0, 2*Math.PI);
+        ctx.stroke();
+        ctx.fill();
+    }
+}
+
+class GBF extends Generator
+{
+    constructor(pos)
+    {
+        super(pos)
+    }
+
+    draw()
+    {
+        super.draw();
+        //Draw the sinewave
+        ctx.strokeStyle = 'black';
+        const width = this._size.x - 2 * this._supWiresLen;
+        const fac = 0.15;
+        ctx.beginPath();
+        ctx.moveTo(this.position.x + this._supWiresLen + width*fac, this.position.y+this._size.y/2);
+        ctx.bezierCurveTo(this.position.x + this._supWiresLen + width*0.5, this.position.y+this._size.y/2 + width*0.5, this.position.x + this._supWiresLen + width*0.5, this.position.y+this._size.y/2 - width*0.5, this.position.x + this._supWiresLen + width*(1-fac), this.position.y+this._size.y/2);
+        ctx.stroke();
+    }
+}
+
+class IdealVoltageSupply extends Generator
+{
+    constructor(pos)
+    {
+        super(pos);
+    }
+
+    draw()
+    {
+        super.draw();
+        ctx.beginPath();
+        ctx.moveTo(this.position.x + this._supWiresLen, this.position.y+this._size.y/2);
+        ctx.lineTo(this.position.x + this._size.x-this._supWiresLen, this.position.y+this._size.y/2);
+        ctx.stroke();
+    }
+}
+
+class IdealCurrentSupply extends Generator
+{
+    constructor(pos)
+    {
+        super(pos);
+    }
+
+    draw()
+    {
+        super.draw();
+        ctx.beginPath();
+        ctx.moveTo(this.position.x + this._size.x/2, this.position.y+this._supWiresLen);
+        ctx.lineTo(this.position.x + this._size.x/2, this.position.y+this._size.y-this._supWiresLen);
+        ctx.stroke();
     }
 }
