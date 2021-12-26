@@ -118,7 +118,6 @@ class Coil extends Dipole
             angle = i * (2 * Math.PI * this._nbrSpires) + i*(Math.PI) +Math.PI;
             //Lerp between minX and maxX
             x = minX + i*(maxX-minX);
-            // x = this.position.x;
             ctx.lineTo(x + this._spiresRadius/(this._nbrSpires*0.8)*Math.cos(angle), this.position.y+this._size.y/2+this._spiresRadius*Math.sin(angle));
         }
         ctx.stroke();

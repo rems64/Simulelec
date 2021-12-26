@@ -12,7 +12,6 @@ class Widget
     }
 }
 
-
 class Graph extends Widget
 {
     constructor(name, parent, func=(x)=>{return x;}, xbegin=-2*Math.PI, xend=2*Math.PI, ybegin=-2, yend=2)

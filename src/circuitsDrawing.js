@@ -26,7 +26,6 @@ function func(x)
     return Math.sin(x);
 }
 
-// var path1 = new Wire({x: 200, y: 200}, {x: 600, y: 600}, 'red');
 var circuit = new Circuit(cvs);
 circuit.addComponent(new IdealVoltageSupply({x: 400, y: 400}));
 circuit.addComponent(new IdealCurrentSupply({x: 600, y: 400}));

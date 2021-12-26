@@ -162,13 +162,10 @@ class Wire extends Drawable
     {
         if(this._inConnected)
         {
-            // console.log(this._inPin);
             this.position.x = this._inPin.position.x;
             this.position.y = this._inPin.position.y;
             this._endPoint.x = this._outPin.position.x; 
             this._endPoint.y = this._outPin.position.y;
-            // console.log(this._inPin);
-            // console.log(this._outPin);
             this._reroutes = [];
             if(this._inPin._type=="input" && this._outPin._type=="output")
             {
@@ -206,14 +203,12 @@ class Wire extends Drawable
             }
             else if(this._inPin._type=="input" && this._outPin._type=="input")
             {
-                // console.log("input input");
                 const mid = Math.min(this.position.x, this._endPoint.x) - wiresMargin;
                 this._reroutes[0] = {x: mid, y: this.position.y};
                 this._reroutes[1] = {x: mid, y: this._endPoint.y};
             }
             else if(this._inPin._type=="output" && this._outPin._type=="output")
             {
-                // console.log("output output");
                 const mid = Math.max(this._endPoint.x, this.position.x) + wiresMargin;
                 this._reroutes[0] = {x: mid, y: this.position.y};
                 this._reroutes[1] = {x: mid, y: this._endPoint.y};
@@ -366,8 +361,6 @@ class Pin extends Drawable
 
     contains(point)
     {
-        // return point.x>this.position.x-this._radius && point.x<this.position.x+this._radius && point.y>this.position.y-this._radius && point.y<this.position.y+this._radius;
-        // Return if the point if hovered, taking into account the hover offset
         return point.x>this.position.x-this._radius-this._hoverOffset && point.x<this.position.x+this._radius+this._hoverOffset && point.y>this.position.y-this._radius-this._hoverOffset && point.y<this.position.y+this._radius+this._hoverOffset;
     }
 }
@@ -460,7 +453,6 @@ class Circuit
                 this._draggingType = "component";
                 this._draggedComponents.push(this._components[i]);
                 this._components[i]._mouseOffset = {x: e.offsetX - this._components[i].position.x, y: e.offsetY - this._components[i].position.y};
-                // break;
             }
             else if(this._selectedComponents.includes(this._components[i]))
             {
@@ -522,8 +514,6 @@ class Circuit
                 case "component":
                     for(let i in this._draggedComponents)
                     {
-                        // this._draggedComponents[i].position.x = e.offsetX - this._draggedComponents[i]._mouseOffset.x;
-                        // this._draggedComponents[i].position.y = e.offsetY - this._draggedComponents[i]._mouseOffset.y;
                         // Update the position of the component taking into account the snapping
                         this._draggedComponents[i].position.x = Math.round((e.offsetX - this._draggedComponents[i]._mouseOffset.x)/this._snappingWidth)*this._snappingWidth;
                         this._draggedComponents[i].position.y = Math.round((e.offsetY - this._draggedComponents[i]._mouseOffset.y)/this._snappingWidth)*this._snappingWidth;
@@ -582,7 +572,6 @@ class Circuit
                         else
                         {
                             this._components[i]._selected = false;
-                            // this._selectedComponents.delete(this._components[i])
                             const index = this._selectedComponents.indexOf(this._components[i]);
                             if (index > -1) {
                                 this._selectedComponents.splice(index, 1);

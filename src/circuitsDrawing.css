@@ -9,9 +9,6 @@ body
     top: 50%;
     transform: translate(0, -50%);
     left: 0px;
-    /* width: 50px; */
-    /* height: 50%; */
-    /* background-color: #424242; */
     opacity: 0.85;
     border-radius: 10px;
     margin-left: 10px;
@@ -24,7 +21,6 @@ body
     text-align: center;
     color: white;
     border-top: solid 1px white;
-    /* border-bottom: solid 0.1px white; */
     font-size: 10px;
     line-height: 60px;
     width: 60px;
@@ -73,8 +69,6 @@ body
     position: absolute;
     top: 50px;
     left: 50px;
-    /* background-color: hsl(0, 0%, 20%); */
-    /* opacity: 0.5; */
     backdrop-filter: blur(5px) brightness(0.5);
 }
 
@@ -89,17 +83,7 @@ body
     justify-content: space-between;
 }
 
-.contextMenuElem:first-child
-{
-
-}
-
-.contextMenuElem:last-child
-{
-}
-
 .contextMenuElem:hover
 {
     background-color: hsla(0, 0%, 25%, 50%);
-    /* backdrop-filter: brightness(1.5); */
 }

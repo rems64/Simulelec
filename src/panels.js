@@ -275,7 +275,6 @@ class Panel
         {
             if(!!this.content)
             {
-                // console.log("Content update");
                 if(!this._maximized)
                 {
                     let deltaSize = {width: this._targetSize.width-this.size.width, height: this._targetSize.height - this.size.height};
