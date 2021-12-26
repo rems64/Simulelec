@@ -1,6 +1,6 @@
 class Panel
 {
-    constructor(position, size, options={title: "Title", docked: false, parent: document.getElementsByTagName("body")[0], roundess: 10, maximized: false}, content=null, continuousUpdate=true)
+    constructor(position, size, options={title: "Title", docked: false, parent: document.getElementsByTagName("body")[0], roundness: 10, maximized: false}, content=null, continuousUpdate=true)
     {
         this.position = {x: position.x, y: position.y};
         this.size = {width: size.width, height: size.height};

@@ -1,4 +1,4 @@
-function lerp(a, b, t) {
+function lerpVec(a, b, t) {
     return {
         x: a.x + (b.x - a.x) * t,
         y: a.y + (b.y - a.y) * t
@@ -58,12 +58,12 @@ class Wire extends Drawable
         for(let i=0; i<=this._resolution; i++)
         {
             h = i/this._resolution;
-            let c = lerp(this.position, a, h);
-            let d = lerp(a, b, h);
-            let e = lerp(b, this._endPoint, h);
-            let f = lerp(c, d, h);
-            let g = lerp(d, e, h);
-            let p = lerp(f, g, h);
+            let c = lerpVec(this.position, a, h);
+            let d = lerpVec(a, b, h);
+            let e = lerpVec(b, this._endPoint, h);
+            let f = lerpVec(c, d, h);
+            let g = lerpVec(d, e, h);
+            let p = lerpVec(f, g, h);
             ctx.lineTo(p.x, p.y);
         }
         ctx.strokeStyle = this._color;
@@ -278,7 +278,7 @@ class Circuit
         
         this._cvs.addEventListener("mousedown", this.mouseDown.bind(this));
         document.addEventListener("mouseup", this.mouseUp.bind(this));
-        this._cvs.addEventListener("mousemove", this.mouseMove.bind(this));
+        document.addEventListener("mousemove", this.mouseMove.bind(this));
         this._mouseDown = false;
 
         this._components = [];
