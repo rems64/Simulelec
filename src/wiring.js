@@ -118,6 +118,8 @@ class Component extends Drawable
         this._spacingBetweenPins = 40;
         this._marginPins = 20;
 
+        this._selected = false;
+
         this._mouseOffset = {x: 0, y: 0};
     }
 
@@ -135,17 +137,6 @@ class Component extends Drawable
 
     draw()
     {
-        //Draw a rectangle representing the dipole
-        ctx.beginPath();
-        ctx.rect(this.position.x, this.position.y, this._size.x, this._size.y);
-        ctx.strokeStyle = "black";
-        //Set stroke width to 4
-        ctx.lineWidth = 4;
-        ctx.stroke();
-        ctx.fillStyle = this._color;
-        ctx.fill();
-        //Reset line width to 1
-        ctx.lineWidth = 1;
         for(let i in this._inputPins)
         {
             this._inputPins[i].draw();
@@ -153,6 +144,17 @@ class Component extends Drawable
         for(let i in this._outputPins)
         {
             this._outputPins[i].draw();
+        }
+
+        if(this._selected)
+        {
+            const margin = 10;
+
+            ctx.strokeStyle = "orange";
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.strokeRect(this.position.x-margin, this.position.y-margin, this._size.x+2*margin, this._size.y+2*margin);
+            ctx.setLineDash([]);
         }
     }
 
@@ -281,28 +283,40 @@ class Circuit
 
         this._components = [];
         this._draggedComponents = [];
+        this._selectedComponents = [];
         this._tempWire = new Wire({x: 0, y: 0}, {x: 0, y: 0}, "red");
         this._tempWireHook = {x: 0, y: 0};
         this._tempWire.hide();
         this._draggingType = null;
+        this._draggingRect = {x: 0, y: 0, w: 0, h: 0};
         this._tmpDraggingPinTarget = null;
         this._snappingWidth = 10;
     }
 
     mouseDown(e)
     {
+        this._draggingType = "box_select";
+        this._draggingRect = {x: e.clientX, y: e.clientY, w: 0, h: 0};
+        let modified = false;
         for(let i=this._components.length-1; i>=0; i--)
         {
             let drag = this._components[i].dragZone({x: e.offsetX, y: e.offsetY});
             if(drag.type == 'component')
             {
+                modified = true;
                 this._draggingType = "component";
                 this._draggedComponents.push(this._components[i]);
                 this._components[i]._mouseOffset = {x: e.offsetX - this._components[i].position.x, y: e.offsetY - this._components[i].position.y};
-                break;
+                // break;
+            }
+            else if(this._selectedComponents.includes(this._components[i]))
+            {
+                this._draggedComponents.push(this._components[i]);
+                this._components[i]._mouseOffset = {x: e.offsetX - this._components[i].position.x, y: e.offsetY - this._components[i].position.y};
             }
             else if(drag.type == 'pin')
             {
+                modified = true;
                 this._draggingType = drag.side=='input' ? "wire_in" : "wire_out";
                 if(drag.side=='input')
                 {
@@ -313,6 +327,11 @@ class Circuit
             }
         }
         this._mouseDown = true;
+        if(!modified)
+        {
+            this._selectedComponents = [];
+            this._draggedComponents = [];
+        }
     }
 
     mouseUp(e)
@@ -325,6 +344,14 @@ class Circuit
         {
             let wire = new Wire(this._tempWire.getPosition(), this._tempWire.getEnd(), "red");
             this._components.push(wire);
+        }
+        // Check for each component if it's selected or not
+        for(let i=0; i<this._components.length; i++)
+        {
+            if(!this._selectedComponents.includes(this._components[i]))
+            {
+                this._components[i]._selected = false;
+            }
         }
     }
 
@@ -376,6 +403,27 @@ class Circuit
                         }
                     }
                     break;
+                case "box_select":
+                    this._draggingRect.w = e.clientX - this._draggingRect.x;
+                    this._draggingRect.h = e.clientY - this._draggingRect.y;
+                    //Check for each component if it is inside the box
+                    let bxa = Math.min(this._draggingRect.x, this._draggingRect.x+this._draggingRect.w);
+                    let bxb = Math.max(this._draggingRect.x, this._draggingRect.x+this._draggingRect.w);
+                    let bya = Math.min(this._draggingRect.y, this._draggingRect.y+this._draggingRect.h);
+                    let byb = Math.max(this._draggingRect.y, this._draggingRect.y+this._draggingRect.h);
+                    for(let i in this._components)
+                    {
+                        if(this._components[i].position.x >= bxa && this._components[i].position.x+this._components[i]._size.x <= bxb && this._components[i].position.y >= bya && this._components[i].position.y+this._components[i]._size.y <= byb)
+                        {
+                            this._components[i]._selected = true;
+                            this._selectedComponents.push(this._components[i]);
+                        }
+                        else
+                        {
+                            this._components[i]._selected = false;
+                        }
+                    }
+                    break;
             }
         }
     }
@@ -401,5 +449,16 @@ class Circuit
             this._components[i].draw();
         }
         this._tempWire.draw();
+
+        //Draw box selection rectangle
+        if(this._draggingType == "box_select")
+        {
+            this._ctx.beginPath();
+            this._ctx.rect(this._draggingRect.x, this._draggingRect.y, this._draggingRect.w, this._draggingRect.h);
+            this._ctx.strokeStyle = "orange";
+            this._ctx.stroke();
+            this._ctx.fillStyle = 'rgba(255, 127, 0, 0.2)';
+            this._ctx.fill();
+        }
     }
 }

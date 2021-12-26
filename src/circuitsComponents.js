@@ -3,14 +3,16 @@ class Lamp extends Dipole
     constructor(pos)
     {
         super(pos);
-        this.color = 'yellow';
-        this.intensity = 1;
+        this.color = [1, 1, 0];
+        this.intensity = 3;
         // Reduce the size to match the lamp
         this._size.x = this._size.y = 100;
         this._supWiresLen = 20;
     }
     draw()
     {
+        super.draw();
+        ctx.strokeStyle = 'black';
         ctx.beginPath();
         ctx.moveTo(this.position.x, this.position.y+this._size.y/2);
         ctx.lineTo(this.position.x + this._supWiresLen, this.position.y+this._size.y/2);
@@ -25,9 +27,13 @@ class Lamp extends Dipole
         ctx.beginPath();
         var rad = (this._size.x - 2*this._supWiresLen)/2;
         ctx.arc(x, y, rad, 0, 2 * Math.PI);
-        ctx.fillStyle = this.color;
-        ctx.strokeStyle = 'black';
+        ctx.fillStyle = 'rgba(' + this.color[0]*255*this.intensity + ',' + this.color[1]*255*this.intensity + ',' + this.color[2]*255*this.intensity + ',' + this.intensity+ ')';
+        ctx.shadowColor = 'yellow';
+        ctx.shadowBlur = 40*Math.min(Math.max(0, (this.intensity-1)/5), 1);
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
         ctx.fill();
+        ctx.shadowBlur = 0;
         ctx.stroke();
         rad /= 1.41421356237;
         // Draw a cross sideway across the circle
@@ -37,10 +43,6 @@ class Lamp extends Dipole
         ctx.moveTo(x-rad, y+rad);
         ctx.lineTo(x+rad, y-rad);
         ctx.stroke();
-
-        //Draw the pins
-        this._inputPins[0].draw();
-        this._outputPins[0].draw();
     }
 }
 
@@ -62,7 +64,9 @@ class Capacitor extends Dipole
     }
     draw()
     {
+        super.draw();
         //Draw the capacitor
+        ctx.strokeStyle = 'black';
         ctx.beginPath();
         ctx.moveTo(this.position.x, this.position.y+this._size.y/2);
         ctx.lineTo(this.position.x + (this._size.x-this._capacitorSpace)/2, this.position.y+this._size.y/2);
@@ -73,9 +77,6 @@ class Capacitor extends Dipole
         ctx.stroke();
         ctx.fillRect(this.position.x + (this._size.x-this._capacitorSpace)/2, this.position.y, this._lineThickness, this._size.y);
         ctx.fillRect(this.position.x + this._size.x/2+this._capacitorSpace/2-this._lineThickness, this.position.y, this._lineThickness, this._size.y);
-        //Draw the pins
-        this._inputPins[0].draw();
-        this._outputPins[0].draw();
     }
 }
 
@@ -94,7 +95,9 @@ class Coil extends Dipole
     }
     draw()
     {
+        super.draw();
         //Draw the bobine
+        ctx.strokeStyle = 'black';
         ctx.beginPath();
         ctx.moveTo(this.position.x, this.position.y+this._size.y/2);
         ctx.lineTo(this.position.x + (this._size.x-this._coilWidth)/2, this.position.y+this._size.y/2);
@@ -119,9 +122,6 @@ class Coil extends Dipole
             ctx.lineTo(x + this._spiresRadius/(this._nbrSpires*0.8)*Math.cos(angle), this.position.y+this._size.y/2+this._spiresRadius*Math.sin(angle));
         }
         ctx.stroke();
-        //Draw the pins
-        this._inputPins[0].draw();
-        this._outputPins[0].draw();
     }
 }
 
@@ -161,11 +161,13 @@ class Resistor extends Dipole
         {
             return (this._resistance*1000000).toFixed(1) + "μΩ";
         }
-
     }
+
     draw()
     {
+        super.draw();
         //Draw the resistor
+        ctx.strokeStyle = 'black';
         ctx.beginPath();
         ctx.moveTo(this.position.x, this.position.y+this._size.y/2);
         ctx.lineTo(this.position.x + this._supWiresLen, this.position.y+this._size.y/2);
@@ -176,12 +178,12 @@ class Resistor extends Dipole
         ctx.stroke();
         ctx.rect(this.position.x + this._supWiresLen, this.position.y, this._size.x - 2 * this._supWiresLen, this._size.y);
         ctx.stroke();
+        ctx.fillStyle = 'white';
+        ctx.fill();
+        ctx.fillStyle = 'black';
         ctx.font = '10px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(this.getResistance(), this.position.x+this._size.x/2, this.position.y+this._size.y/2);
-        //Draw the pins
-        this._inputPins[0].draw();
-        this._outputPins[0].draw();
     }
 }
