@@ -8,6 +8,7 @@ body
 ._panelRoot
 {
     border: solid white 1px;
+    pointer-events: all;
 }
 
 ._panelTitleBar

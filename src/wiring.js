@@ -290,7 +290,12 @@ class Circuit
         this._draggingType = null;
         this._draggingRect = {x: 0, y: 0, w: 0, h: 0};
         this._tmpDraggingPinTarget = null;
-        this._snappingWidth = 10;
+        this._snappingWidth = 50;
+        this._backgroundRedraw = true;
+        this._backgroundCanvas = document.createElement("canvas");
+        this._backgroundCtx = this._backgroundCanvas.getContext("2d");
+        this._backgroundCanvas.width = this._cvs.width;
+        this._backgroundCanvas.height = this._cvs.height;
     }
 
     mouseDown(e)
@@ -435,6 +440,12 @@ class Circuit
 
     update()
     {
+        if(this._backgroundCanvas.width != this._cvs.width || this._backgroundCanvas.height != this._cvs.height)
+        {
+            this._backgroundCanvas.width = this._cvs.width;
+            this._backgroundCanvas.height = this._cvs.height;
+            this._backgroundRedraw = true;
+        }
         for(let i in this._components)
         {
             this._components[i].update();
@@ -444,6 +455,24 @@ class Circuit
     draw()
     {
         this._ctx.clearRect(0, 0, this._cvs.width, this._cvs.height);
+        
+        //Draw the dotted grid
+        if(this._backgroundRedraw)
+        {
+            console.log("Redrawing background");
+            this._backgroundRedraw = false;
+            this._backgroundCtx.fillStyle = "#282828";
+            for(let i=0; i<this._backgroundCanvas.width; i+=this._snappingWidth)
+            {
+                for(let j=0; j<this._backgroundCanvas.height; j+=this._snappingWidth)
+                {
+                    this._backgroundCtx.fillRect(i-2, j-2, 4, 4);
+                }
+            }
+        }
+
+        this._ctx.drawImage(this._backgroundCanvas, 0, 0);
+
         for(let i in this._components)
         {
             this._components[i].draw();
@@ -460,5 +489,6 @@ class Circuit
             this._ctx.fillStyle = 'rgba(255, 127, 0, 0.2)';
             this._ctx.fill();
         }
+
     }
 }

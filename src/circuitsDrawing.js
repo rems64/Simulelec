@@ -19,7 +19,7 @@ var base = {x: 0, y: 0};
 var mouseLoc = {x: 0, y: 0};
 
 var graph1 = new Graph("sin(x)", document.getElementsByTagName("body")[0], func);
-var panel1 = new Panel({x: 100, y: 100}, {width: 300, height: 400}, {title: "Graph1", docked: false, parent: document.getElementsByTagName("body")[0], roundness: 10, maximized: false}, graph1);
+var panel1 = new Panel({x: 100, y: 100}, {width: 300, height: 400}, {title: "Graph1", docked: false, parent: document.getElementById("playground"), roundness: 10, maximized: false}, graph1);
 
 function func(x)
 {
@@ -50,7 +50,8 @@ document.addEventListener("mouseup", () => {
 
 var width, height;
 
-window.onload = () => {
+function sizeCanvas()
+{
     let margin = {x: 2, y: 2};
     width = window.innerWidth - margin.x;
     height = window.innerHeight - margin.y;
@@ -59,5 +60,10 @@ window.onload = () => {
     cvs.style.left = margin.y/2+'px';
     cvs.width = width;
     cvs.height = height;
+}
+
+window.onload = () => {
+    sizeCanvas();
+    window.addEventListener("resize", sizeCanvas);
     window.requestAnimationFrame(frame);
 }
